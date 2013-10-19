@@ -1,9 +1,9 @@
-########################################
-## Dennis User-Managed MUD Server Kit ##
-## __plugin__.py                      ##
-## Plugin Base Classes                ##
-## Copyright 2013 PariahSoft LLC      ##
-########################################
+#########################################
+## DennisX User-Managed MUD Server Kit ##
+## __plugin__.py                       ##
+## Plugin Base Classes                 ##
+## Copyright 2013 PariahSoft LLC       ##
+#########################################
 
 ## **********
 ## Permission is hereby granted, free of charge, to any person obtaining a copy 
