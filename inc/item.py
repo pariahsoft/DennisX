@@ -24,3 +24,11 @@
 ## FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 ## IN THE SOFTWARE.
 ## **********
+
+class Item:
+	def __init__(self):
+		self.id = -1
+		self.name = ""
+		self.desc = ""
+		self.room = -1
+

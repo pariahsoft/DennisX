@@ -25,7 +25,7 @@
 ## IN THE SOFTWARE.
 ## **********
 
-import glob, imp, os
+import glob, imp, os, string
 
 class PluginManager:
 	"""This class manages the plugin registry. The class instance also emulates 
@@ -47,29 +47,60 @@ class PluginManager:
 	
 	def load(self, path):
 		"""Load the plugin at "path" into the registry, and return the plugin 
-		name."""
+		name. Returns None if the plugin info is invalid."""
 		mname = os.path.splitext(os.path.split(path)[-1])[0]
-		inst = imp.load_source(mname, path).Plugin()
-		inst.set_type()
+		inst = imp.load_source(mname, path).Plugin(self)
 		inst.set_info()
-		name = inst.name
-		self.__plugins[name] = inst
-		self.__plugins[name].path = path
-		self.__plugins[name].start()
+		
+		for c in inst.name:
+			if not c in string.ascii_lowercase+"_":
+				return False
+		for c in inst.require:
+			if not c in string.ascii_lowercase+string.digits+"_:;":
+				return False
+		if not type(inst.version) == int:
+			return False
+		
+		self.__plugins[inst.name] = inst
+		self.__plugins[inst.name].path = path
+		self.__plugins[inst.name].start()
+		
 		return name
 	
 	def load_glob(self, match):
 		"""Load all plugins matching a shell glob, and return a list of plugin 
 		names loaded."""
-		pathlist = []
+		pluginlist = []
 		for path in glob.glob(match):
-			pathlist.append(self.load(path))
-		return pathlist
+			pluginlist.append(self.load(path))
+		return pluginlist
+	
+	def autoload(self):
+		"""Load all plugins listed in the config plugin path. Returns True if 
+		succeeded, False if failed."""
+		for path in self.world.config.get("plugin", "load").split(';')
+			path = self.world.config.get("plugin", "path")+"/"+path
+			if not self.load_glob(path):
+				return False
+		if not self.check_deps():
+			return False
+		return True
 	
 	def unload(self, name):
 		"""Remove the plugin "name" from the registry."""
 		self.__plugins[name].finish()
 		del self.__plugins[name]
+	
+	def check_deps(self):
+		"""Verify that all dependencies are fulfilled in the plugin registry. 
+		Returns True if succeeded, False if failed."""
+		for plugin in self.__plugins:
+			for req in plugin.require.split(';'):
+				n, v = req.split(':')
+					if not n in self.__plugins or \
+					v != self.__plugins[n].version
+						return False
+		return True
 	
 	def reset(self, name):
 		"""Reset the plugin "name"."""

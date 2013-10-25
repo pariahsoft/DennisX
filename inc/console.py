@@ -24,3 +24,50 @@
 ## FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 ## IN THE SOFTWARE.
 ## **********
+
+class Console:
+	"""This class handles the server listeners, processes command strings from 
+	them, and passes these to the appropriate command plugins."""
+	def __init__(self, world):
+		self.__linebuf = []
+		self.__commands = {}
+		self.__listeners = {}
+		self.__world = world
+	
+	def tick(self):
+		for listener in self.__listeners:
+			self.process(listener.get_lines())
+	
+	def process(self, lines):
+		for line in lines:
+			player = line[0]
+			name, cmdstring = line[1].split(" ", 1)[0], line[1].split(" ", 1)[1]
+			
+			if name in self.__commands:
+				self.__commands[name].command(player, cmdstring)
+			else:
+				msg = self.__world.config.get("messages", "invalid_command")
+				self.send(player, msg.format(name))
+	
+	def send(self, player, message):
+		listener = self.__world.get_player(player).listener
+		listener.send(player, message)
+	
+	def register_command(self, name, call):
+		self.__commands[name] = call
+	
+	def unregister_command(self, name):
+		if name in self.__commands:
+			del self.__commands[name]
+			return True
+		return False
+	
+	def register_listener(self, name, call):
+		self.__listeners[name] = call
+	
+	def unregister_listener(self, name):
+		if name in self.__listeners:
+			del self.__listeners[name]
+			return True
+		return False
+

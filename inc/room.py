@@ -36,24 +36,6 @@ class Room:
 		self.__items = []
 		self.__links = []
 		self.__players = []
-		self.__ext_calls = {}
-	
-	def ext(self, name):
-		"""Return a reference to the extension call "name". Returns None if 
-		failed."""
-		if name in self.__ext_calls:
-			return self.__ext_calls[name]
-		return None
-	
-	def register_extension_call(self, name, call):
-		"""Register a new extension call "name" for this class, where "call" is 
-		the extension function."""
-		self.__ext_calls[name] = call
-	
-	def unregister_extension_call(self, name):
-		"""Unregister an existing extension call "name" for this class."""
-		if name in self.__ext_calls:
-			del self.__ext_calls[name]
 	
 	def add_item(self, item):
 		"""Add an item to the room, where "item" is the Item class instance."""

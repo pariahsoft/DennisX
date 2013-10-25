@@ -26,38 +26,45 @@
 ## **********
 
 class Plugin:
-	"""Base plugin class for general extensions, and inherited by all other 
-	plugin types."""
+	"""Base plugin class."""
 	def __init__(self, manager):
 		self.manager = manager
 		self.world = manager.world
 		self.path = ""
+		self.running = False
 	
-	def set_type(self):
-		self.type = "extension"
-	
-	def set_info(self): # Replace this in your plugin.
+	def set_info(self):
+		"""Sets the plugin info. This method is only an example; change the 
+		values when you redefine it in your plugin."""
 		self.name = PLUGIN_NAME
 		self.version = PLUGIN_VERSION
+		self.require = PLUGIN_REQUIRE
 	
 	def start(self):
+		"""Start the plugin. Any initialization code should go here."""
+		pass
+	
+	def tick(self):
+		"""Run once per tick."""
 		pass
 	
 	def finish(self):
+		"""Finish the plugin. Any clean up code should go here."""
 		pass
-
-class Command(Plugin):
-	"""Base plugin class for commands. Inherits "Plugin" class."""
-	def set_type(self):
-		self.type = "command"
-
-class Database(Plugin):
-	"""Base plugin class for database drivers. Inherits "Plugin" class."""
-	def set_type(self):
-		self.type = "database"
-
-class Listener(Plugin):
-	"""Base plugin class for listener drivers. Inherits "Plugin" class."""
-	def set_type(self):
-		self.type = "listener"
+	
+	def send(self, player, message):
+		"""Listener plugins only. Send "message" to the "player" identified by 
+		player id."""
+		pass
+	
+	def get_lines(self):
+		"""Listener plugins only. Returns all lines that have been collected 
+		since the last call, in format ((player id, line text), ...)."""
+		pass
+	
+	def command(self, player, cmdstring):
+		"""Command plugins only. Tell the command it is being called by 
+		player id "player" with the arguments "cmdstring"."""
+		pass
+	
 

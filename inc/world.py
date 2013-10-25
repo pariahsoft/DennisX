@@ -32,8 +32,8 @@ class World:
 	def __init__(self, config, log):
 		self.config = config
 		self.plugin_manager = plugin.PluginManager(self)
-		self.__console = console.Console(self.plugin_manager)
-		self.__database = None
+		self.console = console.Console(self)
+		self.database = None
 		self.__log = log
 		self.__players = []
 		self.__rooms = []
@@ -45,7 +45,10 @@ class World:
 		for hook in self.__tick_hooks:
 			hook()
 		
-		self.__console.read()
+		for plugin in self.plugin_manager:
+			plugin.tick()
+		
+		self.console.tick()
 	
 	def ext(self, name):
 		"""Return a reference to the extension call "name". Returns None if 
@@ -81,15 +84,15 @@ class World:
 	
 	def opendb(self, dbfile):
 		"""Open a database "dbfile" for saving and loading the world."""
-		self.__database = database.DatabaseManager(dbfile, self)
+		self.database = database.DatabaseManager(dbfile, self)
 	
-	def load(self):
-		"""Load server state from the database."""
-		self.__database.restore(self)
+	def restore(self):
+		"""Restore server state from the database."""
+		self.database.restore(self)
 	
 	def save(self):
 		"""Save server state to the database."""
-		self.__database.write(self)
+		self.database.write(self)
 	
 	def add_player(self, player):
 		"""Add a player to the world, where "player" is the Player class 

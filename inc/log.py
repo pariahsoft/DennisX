@@ -35,10 +35,10 @@ class Log:
 	
 	def write(self, message):
 		if self.__world.config.get("log", "enable"):
-			print "[{0}] {1}".format(int(time.time())-self.__time_started, message)
+			print("[{0}] {1}".format(int(time.time())-self.__time_started, message))
 	
 	def debug(self, message):
 		if self.__world.config.get("log", "enable") and \
 		self.__world.config.get("log", "debug"):
-			print "{{{0}}} {1}".format(int(time.time())-self.__time_started, message)
+			print("{{{0}}} {1}".format(int(time.time())-self.__time_started, message))
 	

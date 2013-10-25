@@ -35,26 +35,9 @@ class Player:
 		self.desc = ""
 		self.online = False
 		self.room = -1
+		self.listener = None
 		self.__passhash = ""
 		self.__world = world
-		self.__ext_calls = {}
-	
-	def ext(self, name):
-		"""Return a reference to the extension call "name". Returns None if 
-		failed."""
-		if name in self.__ext_calls:
-			return self.__ext_calls[name]
-		return None
-	
-	def register_extension_call(self, name, call):
-		"""Register a new extension call "name" for this class, where "call" is 
-		the extension function."""
-		self.__ext_calls[name] = call
-	
-	def unregister_extension_call(self, name):
-		"""Unregister an existing extension call "name" for this class."""
-		if name in self.__ext_calls:
-			del self.__ext_calls[name]
 	
 	def move(self, link):
 		"""Move the player to the destination room of the Link class 
