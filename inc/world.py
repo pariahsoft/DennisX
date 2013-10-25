@@ -25,16 +25,17 @@
 ## IN THE SOFTWARE.
 ## **********
 
-import console, database, plugin
+import console, database, log, plugin
 
 class World:
 	"""This class handles the world."""
-	def __init__(self, config, log):
+	def __init__(self, config):
+		self.running = True
 		self.config = config
 		self.plugin_manager = plugin.PluginManager(self)
 		self.console = console.Console(self)
 		self.database = None
-		self.__log = log
+		self.log = log.Log(self)
 		self.__players = []
 		self.__rooms = []
 		self.__tick_hooks = []
@@ -65,7 +66,7 @@ class World:
 		"""Unregister an existing tick hook, where "hook" is the hook function.
 		"""
 		for n, h in enumerate(self.__tick_hooks):
-			if h = hook:
+			if h == hook:
 				del self.__tick_hooks[n]
 	
 	def register_extension_call(self, name, call):
@@ -103,7 +104,15 @@ class World:
 		"""Return the Player class instance for the player identified by 
 		"playerid". Returns None if the player does not exist."""
 		for player in self.__players:
-			if player.id = playerid:
+			if player.id == playerid:
+				return player
+		return None
+	
+	def get_player_by_username(self, username):
+		"""Return the Player class instance for the player identified by 
+		"username". Returns None if the player does not exist."""
+		for player in self.__players:
+			if player.username == username:
 				return player
 		return None
 	
@@ -113,7 +122,7 @@ class World:
 		player = None
 		
 		for n, p in enumerate(self.__players):
-			if p.id = playerid:
+			if p.id == playerid:
 				pnum = n
 				player = p
 		
@@ -133,7 +142,7 @@ class World:
 		"""Return the Room class instance for the room identified by "roomid". 
 		Returns None if the room does not exist."""
 		for room in self.__rooms:
-			if room.id = roomid:
+			if room.id == roomid:
 				return room
 		return None
 	

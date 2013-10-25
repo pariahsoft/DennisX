@@ -30,5 +30,5 @@ class Link:
 		self.id = -1
 		self.name = ""
 		self.action = ""
-		self.dest = ""
+		self.dest = -1
 

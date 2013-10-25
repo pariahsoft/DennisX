@@ -25,7 +25,7 @@
 ## IN THE SOFTWARE.
 ## **********
 
-import glob, imp, os, string
+import glob, imp, inspect, os, string
 
 class PluginManager:
 	"""This class manages the plugin registry. The class instance also emulates 
@@ -45,43 +45,54 @@ class PluginManager:
 			return self.__plugins[name]
 		raise KeyError
 	
+	def __iter__(self):
+		return self.__plugins.itervalues()
+	
 	def load(self, path):
 		"""Load the plugin at "path" into the registry, and return the plugin 
-		name. Returns None if the plugin info is invalid."""
+		name. Returns None if loading failed."""
 		mname = os.path.splitext(os.path.split(path)[-1])[0]
-		inst = imp.load_source(mname, path).Plugin(self)
+		module = imp.load_source(mname, path)
+		if hasattr(module, "Plugin"):
+			inst = module.Plugin(self)
+		else:
+			return None
+		
 		inst.set_info()
 		
 		for c in inst.name:
 			if not c in string.ascii_lowercase+"_":
-				return False
+				return None
 		for c in inst.require:
-			if not c in string.ascii_lowercase+string.digits+"_:;":
-				return False
+			if not c in string.ascii_lowercase+string.digits+"_:,":
+				return None
 		if not type(inst.version) == int:
-			return False
+			return None
 		
 		self.__plugins[inst.name] = inst
 		self.__plugins[inst.name].path = path
-		self.__plugins[inst.name].start()
 		
-		return name
+		if not self.__plugins[inst.name].start():
+			return None
+		
+		return inst.name
 	
 	def load_glob(self, match):
 		"""Load all plugins matching a shell glob, and return a list of plugin 
 		names loaded."""
 		pluginlist = []
-		for path in glob.glob(match):
-			pluginlist.append(self.load(path))
+		for m in match.split(','):
+			for path in glob.glob(m):
+				if not "__plugin__.py" in path and not "__init__.py" in path:
+					pluginlist.append(self.load(path))
 		return pluginlist
 	
 	def autoload(self):
 		"""Load all plugins listed in the config plugin path. Returns True if 
 		succeeded, False if failed."""
-		for path in self.world.config.get("plugin", "load").split(';')
-			path = self.world.config.get("plugin", "path")+"/"+path
-			if not self.load_glob(path):
-				return False
+		path = self.world.config.get("plugin", "load")
+		if not self.load_glob(path):
+			return False
 		if not self.check_deps():
 			return False
 		return True
@@ -94,11 +105,12 @@ class PluginManager:
 	def check_deps(self):
 		"""Verify that all dependencies are fulfilled in the plugin registry. 
 		Returns True if succeeded, False if failed."""
-		for plugin in self.__plugins:
-			for req in plugin.require.split(';'):
-				n, v = req.split(':')
+		for plugin in self.__plugins.values():
+			if plugin.require:
+				for req in plugin.require.split(','):
+					n, v = req.split(':')
 					if not n in self.__plugins or \
-					v != self.__plugins[n].version
+					v != self.__plugins[n].version:
 						return False
 		return True
 	

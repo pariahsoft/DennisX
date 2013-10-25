@@ -35,16 +35,16 @@ class Console:
 		self.__world = world
 	
 	def tick(self):
-		for listener in self.__listeners:
+		for listener in self.__listeners.values():
 			self.process(listener.get_lines())
 	
 	def process(self, lines):
 		for line in lines:
 			player = line[0]
-			name, cmdstring = line[1].split(" ", 1)[0], line[1].split(" ", 1)[1]
+			name, args = line[1][0], line[1][1:]
 			
 			if name in self.__commands:
-				self.__commands[name].command(player, cmdstring)
+				self.__commands[name].command(player, args)
 			else:
 				msg = self.__world.config.get("messages", "invalid_command")
 				self.send(player, msg.format(name))
@@ -53,8 +53,8 @@ class Console:
 		listener = self.__world.get_player(player).listener
 		listener.send(player, message)
 	
-	def register_command(self, name, call):
-		self.__commands[name] = call
+	def register_command(self, name, inst):
+		self.__commands[name] = inst
 	
 	def unregister_command(self, name):
 		if name in self.__commands:
@@ -62,8 +62,8 @@ class Console:
 			return True
 		return False
 	
-	def register_listener(self, name, call):
-		self.__listeners[name] = call
+	def register_listener(self, name, inst):
+		self.__listeners[name] = inst
 	
 	def unregister_listener(self, name):
 		if name in self.__listeners:

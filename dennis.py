@@ -35,15 +35,14 @@ else:
 
 # Dennis module imports
 sys.path.append("inc/")
-import world, log
+import world
 
 # Variable setup
 W = None
-log = log.Log()
 
 # Interrupt/Term signal handling
 def sigint_handler(signum, frame):
-	log.write("Shutting down...")
+	W.log.write("Shutting down...")
 	W.running = False
 signal.signal(signal.SIGINT, sigint_handler)
 signal.signal(signal.SIGTERM, sigint_handler)
@@ -65,7 +64,9 @@ def main():
 	configfile.close()
 	
 	# Initialize World
-	W = world.World(config, log)
+	W = world.World(config)
+	if not W.plugin_manager.autoload():
+		return 1
 	
 	# Run the mainloop
 	loop()
