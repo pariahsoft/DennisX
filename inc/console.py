@@ -46,7 +46,7 @@ class Console:
 			if name in self.__commands:
 				self.__commands[name].command(player, args)
 			else:
-				msg = self.__world.config.get("messages", "invalid_command")
+				msg = self.__world.config["messages"]["invalid_command"]
 				self.send(player, msg.format(name))
 	
 	def send(self, player, message):

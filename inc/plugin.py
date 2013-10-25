@@ -90,7 +90,7 @@ class PluginManager:
 	def autoload(self):
 		"""Load all plugins listed in the config plugin path. Returns True if 
 		succeeded, False if failed."""
-		path = self.world.config.get("plugin", "load")
+		path = self.world.config["plugin"]["path"]
 		if not self.load_glob(path):
 			return False
 		if not self.check_deps():

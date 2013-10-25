@@ -25,13 +25,7 @@
 ## IN THE SOFTWARE.
 ## **********
 
-import sys, time, signal
-
-# Python 2/3 import handling
-if sys.version_info[0] == 3:
-	import configparser
-else:
-	import ConfigParser as configparser
+import json, signal, sys, time
 
 # Dennis module imports
 sys.path.append("inc/")
@@ -58,9 +52,11 @@ def main():
 	global W
 	
 	# Read config file
-	config = configparser.RawConfigParser()
-	configfile = open("config.ini", "r")
-	config.readfp(configfile)
+	configfile = open("config.json", "r")
+	try:
+		config = json.load(configfile)
+	except ValueError:
+		return 1
 	configfile.close()
 	
 	# Initialize World

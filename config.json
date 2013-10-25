@@ -1,0 +1,27 @@
+{
+	"database": {
+		"dbfile": "world.json.gz"
+	},
+	"plugin": {
+		"path": "plugins/*.py,plugins/commands/*.py,plugins/database/*.py,plugins/listener/*.py"
+	},
+	"log": {
+		"enable": true,
+		"debug": true
+	},
+	"irc": {
+		"nickname": "[PSFT]DennisX",
+		"username": "psft_dennisx",
+		"realname": "DennisX MUD",
+		"nickservpass": "",
+		"server": "irc.datnode.net,6667",
+		"channels": "#dennis",
+		"timeout": 5,
+		"retryrate": 3,
+		"recvsize": 32
+	},
+	"json": {
+		"gzip": true
+	}
+}
+

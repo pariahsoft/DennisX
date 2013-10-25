@@ -41,7 +41,7 @@ class Plugin:
 	
 	def start(self):
 		self.linebuf = []
-		socket.setdefaulttimeout(float(self.world.config.get("irc", "timeout")))
+		socket.setdefaulttimeout(float(self.world.config["irc"]["timeout"]))
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		
 		self.world.console.register_listener(self.name, self)
@@ -60,13 +60,13 @@ class Plugin:
 					self.socket.send('PONG {0}\r\n'.format(line[5:]))
 			
 				elif line.split(' ')[1] == "002": # We're connected.
-					self.socket.send('MODE {0} +B\r\n'.format(self.world.config.get("irc", "nickname")))
+					self.socket.send('MODE {0} +B\r\n'.format(self.world.config["irc"]["nickname"]))
 				
-					if self.world.config.get("irc", "nickservpass"):
+					if self.world.config["irc"]["nickservpass"]:
 						self.socket.send('PRIVMSG NICKSERV :IDENTIFY {0}\r\n'.format(\
-						self.world.config.get("irc", "nickservpass"))) #Identify with nickserv.
+						self.world.config["irc"]["nickservpass"])) #Identify with nickserv.
 				
-					for channel in self.world.config.get("irc", "channels").split(','):
+					for channel in self.world.config["irc"]["channels"].split(','):
 						channel = channel.split(',')
 						if len(channel) > 1:
 							self.socket.send('JOIN {0} {1}\r\n'.format(channel[0], channel[1]))
@@ -80,10 +80,10 @@ class Plugin:
 	
 	def connect(self):
 		try:
-			host, port = self.world.config.get("irc", "server").split(',')
+			host, port = self.world.config["irc"]["server"].split(',')
 			self.socket.connect((host, int(port)))
 			self.socket.setblocking(0)
-			self.socket.send("NICK {0}\r\n".format(self.world.config.get("irc", "nickname")))
+			self.socket.send("NICK {0}\r\n".format(self.world.config["irc"]["nickname"]))
 			
 			self.receive()
 			for line in self.linebuf:
@@ -91,8 +91,8 @@ class Plugin:
 					return False
 			
 			self.socket.send('USER {0} 8 * :{1}\r\n'.format(\
-			self.world.config.get("irc", "username"), \
-			self.world.config.get("irc", "realname")))
+			self.world.config["irc"]["username"], \
+			self.world.config["irc"]["realname"]))
 			
 			return True
 		except socket.error:
@@ -100,9 +100,9 @@ class Plugin:
 	
 	def receive(self):
 		try:
-			buf = self.socket.recv(int(self.world.config.get("irc", "recvsize")))
+			buf = self.socket.recv(int(self.world.config["irc"]["recvsize"]))
 			while not buf.endswith('\n'):
-				buf += self.socket.recv(int(self.world.config.get("irc", "recvsize")))
+				buf += self.socket.recv(int(self.world.config["irc"]["recvsize"]))
 			self.linebuf.extend(buf.split('\n'))
 		except socket.error:
 			pass
