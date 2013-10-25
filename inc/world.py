@@ -38,46 +38,13 @@ class World:
 		self.log = log.Log(self)
 		self.__players = []
 		self.__rooms = []
-		self.__tick_hooks = []
-		self.__ext_calls = {}
 	
 	def tick(self):
-		"""Runs each tick and calls tick hooks."""
-		for hook in self.__tick_hooks:
-			hook()
-		
+		"""Runs tick functions for the console and plugins."""
 		for plugin in self.plugin_manager:
 			plugin.tick()
 		
 		self.console.tick()
-	
-	def ext(self, name):
-		"""Return a reference to the extension call "name". Returns None if 
-		failed."""
-		if name in self.__ext_calls:
-			return self.__ext_calls[name]
-		return None
-	
-	def register_tick_hook(self, hook):
-		"""Register a new tick hook, where "hook" is the hook function."""
-		self.__tick_hooks.append(hook)
-	
-	def unregister_tick_hook(self, hook):
-		"""Unregister an existing tick hook, where "hook" is the hook function.
-		"""
-		for n, h in enumerate(self.__tick_hooks):
-			if h == hook:
-				del self.__tick_hooks[n]
-	
-	def register_extension_call(self, name, call):
-		"""Register a new extension call "name" for this class, where "call" is 
-		the extension function."""
-		self.__ext_calls[name] = call
-	
-	def unregister_extension_call(self, name):
-		"""Unregister an existing extension call "name" for this class."""
-		if name in self.__ext_calls:
-			del self.__ext_calls[name]
 	
 	def log(self, message):
 		"""Write "message" to the server log."""

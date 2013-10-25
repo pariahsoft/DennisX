@@ -35,10 +35,13 @@ class Console:
 		self.__world = world
 	
 	def tick(self):
+		"""Get lines from the listeners each tick."""
 		for listener in self.__listeners.values():
 			self.process(listener.get_lines())
 	
 	def process(self, lines):
+		"""Process lines received and pass to the appropriate commands, where 
+		"lines" is a list of lines received."""
 		for line in lines:
 			player = line[0]
 			name, args = line[1][0], line[1][1:]
@@ -50,22 +53,28 @@ class Console:
 				self.send(player, msg.format(name))
 	
 	def send(self, player, message):
+		"""Send a message to a player through their listener, where "player" 
+		is the player id and "message" is the message to be sent."""
 		listener = self.__world.get_player(player).listener
 		listener.send(player, message)
 	
 	def register_command(self, name, inst):
+		"""Register the command plugin class instance "inst" by its "name"."""
 		self.__commands[name] = inst
 	
 	def unregister_command(self, name):
+		"""Unregister the command "name"."""
 		if name in self.__commands:
 			del self.__commands[name]
 			return True
 		return False
 	
 	def register_listener(self, name, inst):
+		"""Register the listener plugin class instance "inst" by its "name"."""
 		self.__listeners[name] = inst
 	
 	def unregister_listener(self, name):
+		"""Unregister the listener "name"."""
 		if name in self.__listeners:
 			del self.__listeners[name]
 			return True
