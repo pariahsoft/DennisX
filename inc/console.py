@@ -63,7 +63,8 @@ class Console:
 		self.__commands[name] = inst
 	
 	def unregister_command(self, name):
-		"""Unregister the command "name"."""
+		"""Unregister the command "name". Returns True if succeeded, False if 
+		the command does not exist."""
 		if name in self.__commands:
 			del self.__commands[name]
 			return True
@@ -74,7 +75,8 @@ class Console:
 		self.__listeners[name] = inst
 	
 	def unregister_listener(self, name):
-		"""Unregister the listener "name"."""
+		"""Unregister the listener "name". Returns True if succeeded, False if 
+		the listener does not exist."""
 		if name in self.__listeners:
 			del self.__listeners[name]
 			return True

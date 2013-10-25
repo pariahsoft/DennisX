@@ -42,10 +42,10 @@ signal.signal(signal.SIGINT, sigint_handler)
 signal.signal(signal.SIGTERM, sigint_handler)
 
 # Mainloop
-def loop():
+def loop(tickspeed):
 	while W.running:
 		W.tick()
-		time.sleep(1.0/60)
+		time.sleep(1.0/tickspeed)
 
 # Main Function
 def main():
@@ -65,9 +65,11 @@ def main():
 		return 1
 	
 	# Run the mainloop
-	loop()
+	loop(config["dennis"]["tickspeed"])
 	
-	# Mainloop ended, save
+	# Mainloop ended, finish plugins and save
+	for plugin in W.plugin_manager:
+		plugin.finish()
 	W.save()
 	
 	# Return to OS

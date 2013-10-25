@@ -1,4 +1,7 @@
 {
+	"dennis": {
+		"tickspeed": 10
+	},
 	"database": {
 		"dbfile": "world.json.gz"
 	},
@@ -22,6 +25,9 @@
 	},
 	"json": {
 		"gzip": true
+	},
+	"messages": {
+		"invalid_command": "Error: invalid command \"{0}\"."
 	}
 }
 

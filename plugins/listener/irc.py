@@ -40,6 +40,8 @@ class Plugin:
 		self.require = ""
 	
 	def start(self):
+		"""Create a socket and register this plugin with the console as a 
+		listener. Then attempt a connection."""
 		self.linebuf = []
 		socket.setdefaulttimeout(float(self.world.config["irc"]["timeout"]))
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -52,6 +54,8 @@ class Plugin:
 		return True
 	
 	def tick(self):
+		"""Receive new lines, check for and handle pings, finish setup if IRC 
+		has reported a successful connection."""
 		self.receive()
 		
 		for line in self.linebuf:
@@ -76,9 +80,11 @@ class Plugin:
 				pass
 	
 	def finish(self):
+		"""Close the connection."""
 		self.socket.close()
 	
 	def connect(self):
+		"""Connect to the IRC server and attempt to log in."""
 		try:
 			host, port = self.world.config["irc"]["server"].split(',')
 			self.socket.connect((host, int(port)))
@@ -99,6 +105,7 @@ class Plugin:
 			return False
 	
 	def receive(self):
+		"""Attempt to receive new lines from the server."""
 		try:
 			buf = self.socket.recv(int(self.world.config["irc"]["recvsize"]))
 			while not buf.endswith('\n'):
@@ -108,10 +115,14 @@ class Plugin:
 			pass
 	
 	def send(self, player, message):
+		"""Send a message to a player, where "player" is the player id and 
+		"message" is the message to be sent."""
 		player = self.world.get_player(player)
 		self.socket.send("PRIVMSG {0} :{1}\r\n".format(player.username, message))
 	
 	def get_lines(self):
+		"""Called by the console each tick. Process any new lines received from 
+		the server into the correct format and return them."""
 		lines = []
 		
 		for line in self.linebuf:
